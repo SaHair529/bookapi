@@ -39,6 +39,34 @@ class BookRepository extends ServiceEntityRepository
         }
     }
 
+    public function findByRelations(array $relations)
+    {
+        $qb = $this->createQueryBuilder('b');
+
+        if (isset($relations['genres'])) {
+            $qb->join('b.genres', 'g')
+                ->andWhere('g.title IN (:genres)')
+                ->setParameter('genres', $relations['genres']);
+        }
+
+        if (isset($relations['authors'])) {
+            $qb->join('b.authors', 'a')
+                ->andWhere('a.fullname IN (:authors)')
+                ->setParameter('authors', $relations['authors']);
+        }
+
+        if (isset($relations['dates'])) {
+            $dates = $relations['dates'];
+
+            $qb->andWhere('b.written_at >= :start')
+                ->andWhere('b.written_at <= :end')
+                ->setParameter('start', $dates['start'])
+                ->setParameter('end', $dates['end']);
+        }
+            
+        
+        return $qb->getQuery()->getResult();
+    }
 //    /**
 //     * @return Book[] Returns an array of Book objects
 //     */

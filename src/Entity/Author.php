@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\GenreRepository;
+use App\Repository\AuthorRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: GenreRepository::class)]
-class Genre
+#[ORM\Entity(repositoryClass: AuthorRepository::class)]
+class Author
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -16,16 +16,17 @@ class Genre
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $title = null;
+    private ?string $fullname = null;
 
-    #[ORM\ManyToMany(targetEntity: Book::class, mappedBy: 'genres')]
+    #[ORM\ManyToMany(targetEntity: Book::class, inversedBy: 'authors')]
     private Collection $books;
 
-    public function __construct($title = null)
+    public function __construct($fullname=null)
     {
         $this->books = new ArrayCollection();
-        if ($title !== null) {
-            $this->title = $title;
+
+        if ($fullname !== null) {
+            $this->fullname = $fullname;
         }
     }
 
@@ -34,14 +35,14 @@ class Genre
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getFullname(): ?string
     {
-        return $this->title;
+        return $this->fullname;
     }
 
-    public function setTitle(string $title): self
+    public function setFullname(string $fullname): self
     {
-        $this->title = $title;
+        $this->fullname = $fullname;
 
         return $this;
     }
@@ -58,7 +59,6 @@ class Genre
     {
         if (!$this->books->contains($book)) {
             $this->books->add($book);
-            $book->addGenre($this);
         }
 
         return $this;
@@ -66,9 +66,7 @@ class Genre
 
     public function removeBook(Book $book): self
     {
-        if ($this->books->removeElement($book)) {
-            $book->removeGenre($this);
-        }
+        $this->books->removeElement($book);
 
         return $this;
     }

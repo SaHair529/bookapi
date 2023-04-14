@@ -39,6 +39,15 @@ class GenreRepository extends ServiceEntityRepository
         }
     }
 
+    public function findByTitles(array $titles)
+    {
+        $qb = $this->createQueryBuilder('g')
+            ->andWhere('g.title IN (:titles)')
+            ->setParameter('titles', $titles);
+        
+        return $qb->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Genre[] Returns an array of Genre objects
 //     */
