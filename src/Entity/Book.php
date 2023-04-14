@@ -104,6 +104,17 @@ class Book
         return $this;
     }
 
+    public function addGenres(array $genres): self
+    {
+        foreach($genres as $genre) {
+            if (!$this->genres->contains($genre)) {
+                $this->genres->add($genre);
+            }
+        }
+
+        return $this;
+    }
+
     public function removeGenre(Genre $genre): self
     {
         $this->genres->removeElement($genre);
@@ -124,6 +135,18 @@ class Book
         if (!$this->authors->contains($author)) {
             $this->authors->add($author);
             $author->addBook($this);
+        }
+
+        return $this;
+    }
+
+    public function addAuthors(array $authors): self
+    {
+        foreach($authors as $author) {
+            if (!$this->authors->contains($author)) {
+                $this->authors->add($author);
+                $author->addBook($this);
+            }
         }
 
         return $this;
